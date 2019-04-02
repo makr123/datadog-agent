@@ -44,12 +44,13 @@ func (p *parser) Parse(msg []byte) (*message.Message, error) {
 }
 
 // Unwrap remove the header of log lines of containerd
-func (p *parser) Unwrap(line []byte) ([]byte, error) {
+// and return the log and timestamp
+func (p *parser) Unwrap(line []byte) ([]byte, string, error) {
 	components, err := parse(line)
 	if err != nil {
-		return line, err
+		return line, "", err
 	}
-	return components[3], nil
+	return components[3], string(components[0]), nil
 }
 
 // getContainerdStatus returns the status of the message based on the value of the

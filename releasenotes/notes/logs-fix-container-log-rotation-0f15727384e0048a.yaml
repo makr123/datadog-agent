@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    Properly handle docker container logs in multiline mode

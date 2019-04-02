@@ -121,6 +121,7 @@ type MultiLineHandler struct {
 	lineChan     chan []byte
 	outputChan   chan *message.Message
 	lineBuffer   *LineBuffer
+	lastSeenTS   string
 	newContentRe *regexp.Regexp
 	flushTimeout time.Duration
 	parser       parser.Parser
@@ -189,7 +190,8 @@ func (h *MultiLineHandler) run() {
 // process accumulates lines in lineBuffer and flushes lineBuffer when a new line matches with newContentRe
 // When lines are too long, they are truncated
 func (h *MultiLineHandler) process(line []byte) {
-	unwrappedLine, err := h.parser.Unwrap(line)
+	unwrappedLine, ts, err := h.parser.Unwrap(line)
+	h.lastSeenTS = ts
 	if err != nil {
 		log.Debug(err)
 	}
@@ -228,6 +230,10 @@ func (h *MultiLineHandler) sendContent() {
 			log.Debug(err)
 		}
 		if output != nil && len(output.Content) > 0 {
+			// The output.Timestamp filled by the Parse function is the ts of the first
+			// log line, in order to be useful to setLastSince function, we need to replace
+			// it with the ts of the last log line
+			output.Timestamp = h.lastSeenTS
 			output.RawDataLen = rawDataLen
 			h.outputChan <- output
 		}
