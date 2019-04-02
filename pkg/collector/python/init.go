@@ -22,9 +22,11 @@ import (
 	"github.com/DataDog/datadog-agent/pkg/version"
 )
 
-// #include "datadog_agent_six.h"
-// #cgo LDFLAGS: -ldatadog-agent-six -ldl
 /*
+#include "datadog_agent_six.h"
+#cgo !windows LDFLAGS: -L../../six/ -ldatadog-agent-six -ldl
+#cgo windows LDFLAGS: -L../../six/ -ldatadog-agent-six -lstdc++ -static
+
 void GetVersion(char **);
 void GetHostname(char **);
 void GetClusterName(char **);

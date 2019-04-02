@@ -20,8 +20,9 @@ import (
 )
 
 /*
-#cgo LDFLAGS: -ldatadog-agent-six -ldl
 #include "datadog_agent_six.h"
+#cgo !windows LDFLAGS: -L../../six/ -ldatadog-agent-six -ldl
+#cgo windows LDFLAGS: -L../../six/ -ldatadog-agent-six -lstdc++ -static
 */
 import (
 	"C"
